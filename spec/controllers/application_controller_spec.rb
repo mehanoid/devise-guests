@@ -17,6 +17,12 @@ describe ApplicationController, :type => :controller do
     expect(@controller.current_or_guest_user.email).to match(/guest/)
   end
 
+  it "should return nil if create option is set to false" do
+    allow(@mock_warden).to receive(:authenticate).with(anything).and_return(false)
+
+    expect(@controller.current_or_guest_user(create: false)).to be_nil
+  end
+
   it "should use the current user when available" do
     m = double()
     allow(@mock_warden).to receive(:authenticate).with(anything).and_return(m)

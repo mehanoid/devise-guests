@@ -38,7 +38,7 @@ module DeviseGuests::Controllers
         define_concern_callbacks :logging_in_#{mapping}
 
  
-        def guest_#{mapping}
+        def guest_#{mapping}(create: true)
           return @guest_#{mapping} if @guest_#{mapping}
 
           if session[:guest_#{mapping}_id]
@@ -46,16 +46,18 @@ module DeviseGuests::Controllers
             @guest_#{mapping} = nil if @guest_#{mapping}.respond_to? :guest and !@guest_#{mapping}.guest 
           end
 
-          @guest_#{mapping} ||= begin
-            u = create_guest_#{mapping}(session[:guest_#{mapping}_id])
-            session[:guest_#{mapping}_id] = u.send(#{class_name}.authentication_keys.first)
-            u
+          if create
+            @guest_#{mapping} ||= begin
+              u = create_guest_#{mapping}(session[:guest_#{mapping}_id])
+              session[:guest_#{mapping}_id] = u.send(#{class_name}.authentication_keys.first)
+              u
+            end
           end
 
           @guest_#{mapping}
         end
 
-        def current_or_guest_#{mapping}
+        def current_or_guest_#{mapping}(create: true)
           if current_#{mapping}
             if session[:guest_#{mapping}_id]
               run_callbacks :logging_in_#{mapping} do
@@ -65,7 +67,7 @@ module DeviseGuests::Controllers
             end
             current_#{mapping}
           else
-            guest_#{mapping}
+            guest_#{mapping}(create: create)
           end
         end
 

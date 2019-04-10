@@ -35,4 +35,13 @@ guest_user # ( for anonymous users)
 
 => User<id: nil, email: guest_RANDOMENOUGHSTRING_@example.com, guest: true>
 
+# If you don't want guest user to be auto created you can use
+
+current_or_guest_user(create: false)
+# or
+current_user(create: false)
+
+# Then guest user will be returned if exists or nil otherwise
+  
+
 ```
