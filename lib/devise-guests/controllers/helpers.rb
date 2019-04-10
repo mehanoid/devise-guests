@@ -7,10 +7,11 @@ module DeviseGuests::Controllers
       (DeviseGuests::Controllers::Helpers.callbacks || []).each do |c|
         define_callbacks *c
       end
+      DeviseGuests::Controllers::Helpers.register_included_module(self)
 
     end
 
-    mattr_reader :callbacks
+    mattr_reader :callbacks, :included_in
 
     module ClassMethods
 
@@ -19,6 +20,14 @@ module DeviseGuests::Controllers
     def self.define_concern_callbacks *args
       @@callbacks ||= []
       @@callbacks << args
+      (DeviseGuests::Controllers::Helpers.included_in || []).each do |m|
+        m.define_callbacks *args
+      end
+    end
+
+    def self.register_included_module m
+      @@included_in ||= []
+      @@included_in << m
     end
 
     def self.define_helpers(mapping) #:nodoc:
